@@ -34,7 +34,6 @@
  *
  * @author     Dave Miller <dave@alberon.co.uk>
  * @author     Tony Lopez <tony@alberon.co.uk>
- * @version    1.0.0
  */
 
 namespace Alberon\htmltopdf;
