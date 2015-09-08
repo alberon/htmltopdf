@@ -1,9 +1,9 @@
 {
     "name": "alberon/htmltopdf",
     "description": "HTML to PDF PHP wrapper with executable files",
-    "keywords": ["pdf", "wkhtmltopdf", "binary"],
-    "license": "MIT",
+    "keywords": ["pdf", "wkhtmltopdf", "binary", "htmltopdf"],
     "homepage": "https://github.com/alberon/htmltopdf",
+    "license": "MIT",
     "authors": [
         {
             "name": "Dave Miller",
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.3"
     },
     "autoload": {
         "psr-4": {
