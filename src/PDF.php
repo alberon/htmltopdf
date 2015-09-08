@@ -2,146 +2,137 @@
 /**
  * Generates a pdf based on an html string.
  *
- *  IMPORTANT:  When using styles, you need to use readfile() to place the
- *              styles inline. You also need to make sure that images have
- *              an absolute path, otherwise they won't be seen.
- *
- *
- * PUBLIC FUNCTIONS:
- *
- * setServerType    set the server type to change which wkhtmltopdf bin file is
- *                  used (at the moment, only supports DEV and LIVE)
- *                  //TODO needs versioning instead of using dev - live
- *
- * errorOutput      handles whether to show detailed errors for debugging or a
- *                  generic error for live work
- *
- * output           handles what type of output to use, currently only supports
- *                  pdf and html (html is the default)
- *
- * PRIVATE METHODS:
- *
- * generatePDF      creates the actual pdf document in regards to the earlier
- *                  settings that were chosen thanks to wkhtmltopdf
+ * IMPORTANT:  When using styles, you need to use readfile() to place the
+ *             styles inline. You also need to make sure that images have
+ *             an absolute path, otherwise they won't be seen.
  *
  * example usage for a live site:
  *  <code>
- *      ob_start();
- *      //HTML CODE
- *      $html = ob_get_clean();
- *      require_once "/path/to/class/PDF.php";
- *      $pdf = new PDF($html);
- *      $pdf->errorOutput('none');
- *      $pdf->setServerType('LIVE');
- *      $pdf->output('PDF');
+ *    // Require the PDF class at the top of the file
+ *    require_once "/path/to/package/src/PDF.php";
+ *    use \Alberon\HTMLtoPDF\PDF;
+
+ *    // Open up an ob buffer to capture all the following html
+ *    ob_start();
+ *    // HTML CODE
+ *    // Close the ob buffer and get the html into a variable
+ *    $html = ob_get_clean();
+ *
+ *    // Setup the PDF class with the generated html
+ *    $pdf = new PDF($html);
+ *
+ *    // Set wkhtmltopdf version
+ *    $pdf->setVersion('amd64');
+ *
+ *    // Set whether to include detailed errors or a generic error
+ *    // $pdf->showErrors();
+ *    $pdf->hideErrors();
+ *
+ *    // Output the PDF
+ *    $pdf->outputAsPDF('my_filename');
  *  </code>
  *
  * @author     Dave Miller <dave@alberon.co.uk>
  * @author     Tony Lopez <tony@alberon.co.uk>
- * @version    Release: @1.0.0@
+ * @version    1.0.0
  */
+
+namespace Alberon\HTMLtoPDF;
+
 class PDF
 {
 
-    private $HTML, $ERRORS, $SERVER;
+    const DIR = __DIR__ . '/../bin/wkhtmltopdf-';
+
+    private $html, $errors = true, $version = 'i386';
 
     /**
-     * __construct
      * Constructor for PDF
      *
-     * @params $html
+     * @param string $html The html to be converted to PDF format
      * @return void
      */
-    public function __construct($html) {
-        $this->HTML = $html;
-        $this->ERRORS = false;
-        $this->SERVER = 'DEV';
+    public function __construct($html)
+    {
+        $this->html = $html;
     }
 
     /**
-     * setServerType
-     * Set the server type to use the corresponding wkhtmltopdf bin file
+     * Set the version type of wkhtmltopdf to be used
+     * Note: Different wkhtmltopdf versions exist for different server setups
      *
-     * @params $server
+     * @param string $version Version of wkhtmltopdf to be used
      * @return void
      */
-    public function setServerType($server) {
-        if(strcasecmp($server,'live') == 0){
-            $this->SERVER = 'LIVE';
-        } else if(strcasecmp($server,'dev') == 0){
-            $this->SERVER = 'DEV';
+    public function setVersion($version = 'i386')
+    {
+        if ($version === 'i386' || $version === 'amd64')
+            $this->version = $version;
+        else {
+            throw new Exception("Invalid version: $version");
         }
     }
 
     /**
-     * errorOutput
-     * Handles whether to show detailed errors for debugging or a generic error
-     * for live work
+     * Show detailed errors
      *
-     * @params $err
      * @return void
      */
-    public function errorOutput($err) {
-        $this->ERRORS = $err;
+    public function showErrors()
+    {
+        $this->errors = true;
     }
 
     /**
-     * setMode
-     * Sets what kind of mode for debugging
+     * Hide detailed errors and replace with more generic error
      *
-     * @param $mode
      * @return void
      */
-    public function output($mode) {
-        if(strcasecmp($mode,'pdf') == 0){
-            $this->generatePDF();
-        } else {
-            echo $this->HTML;
-        }
+    public function hideErrors()
+    {
+        $this->errors = false;
     }
 
     /**
-     * generatePDF
-     * Generates the PDF file using wkhtmltopdf or print the errors
+     * Output the pdf as html, useful for debugging
      *
      * @return void
      */
-    private function generatePDF() {
-        // Run wkhtmltopdf
+    public function outputAsHTML()
+    {
+        echo $this->html;
+    }
+
+    /**
+     * Outputs the PDF file using wkhtmltopdf or prints the errors
+     *
+     * @return void
+     */
+    public function outputAsPDF($name = 'document')
+    {
+        // Set pipes to output into
         $descriptorspec = array(
             0 => array('pipe', 'r'), // stdin
             1 => array('pipe', 'w'), // stdout
-    	    2 => array('pipe', 'w'), // stderr
+            2 => array('pipe', 'w'), // stderr
         );
 
-        //Open the wkhtmltopdf bine file
-        if ($this->SERVER == 'DEV') {
-            $process = proc_open(
-                //Absolute path to the dev-wkhtmltopdf with the quiet flag to
-                //avoid unnecessary output
-                __DIR__.'/bin/dev-wkhtmltopdf --quiet - -',
-                //List of the pipes used
-                $descriptorspec,
-                $pipes
-            );
-        } elseif ($this->SERVER == 'LIVE') {
-            $process = proc_open(
-                //Absolute path to the wkhtmltopdf with the quiet flag to avoid
-                //unnecessary output
-                __DIR__.'/bin/wkhtmltopdf --quiet - -',
-                //List of the pipes used
-                $descriptorspec,
-                $pipes
-            );
-        }
+        // Open the wkhtmltopdf file
+        $process = proc_open(
+            // Absolute path to wkhtmltopdf file
+            static::DIR . $this->version . ' --quiet - -',
+            // List of the pipes used
+            $descriptorspec,
+            $pipes
+        );
 
         // Send the HTML on stdin
-        fwrite($pipes[0], $this->HTML);
+        fwrite($pipes[0], $this->html);
         fclose($pipes[0]);
 
         // Read the outputs
         $pdf = stream_get_contents($pipes[1]);
-    	$errors = stream_get_contents($pipes[2]);
+        $errors = stream_get_contents($pipes[2]);
         // var_dump($pdf);exit;
 
         // Close the process after closing the remaining pipes
@@ -149,25 +140,25 @@ class PDF
         fclose($pipes[2]);
         $return_value = proc_close($process);
 
-    	// Output the results
-    	if ($errors) {
-    	    // Note: On a live site you should probably log the error and give a
-    	    // more generic error message, for security
-            if($this->ERRORS){
-        	    echo 'Sorry, there was an error generating the PDF';
+        // Output the results
+        if ($errors) {
+            if($this->errors){
+                echo 'PDF ERROR:<br />' . nl2br(htmlspecialchars($errors));
             } else {
-	           echo 'PDF GENERATOR ERROR:<br />' . nl2br(htmlspecialchars($errors));
+                echo 'Sorry, there was an error generating the PDF';
             }
-    	} else {
-            //Set relevant headers in order to view the page as a pdf
-    	    header('Content-Type: application/pdf');
-    	    header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
-    	    header('Pragma: public');
-    	    header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-    	    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-    	    header('Content-Length: ' . strlen($pdf));
-    	    header('Content-Disposition: inline; filename="' . $filename . '";');
-    	    echo $pdf;
-    	}
+        } else {
+            // Set relevant headers in order to view the page as a pdf
+            header('Content-Type: application/pdf');
+            // HTTP/1.1
+            header('Cache-Control: public, must-revalidate, max-age=0');
+            header('Pragma: public');
+            // Date in the past
+            header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Content-Length: ' . strlen($pdf));
+            header('Content-Disposition: inline; filename="' . $name . '.pdf";');
+            echo $pdf;
+        }
     }
 }

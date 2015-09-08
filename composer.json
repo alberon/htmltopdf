@@ -1,19 +1,24 @@
 {
-    "name": "alberon/wkhtmltopdf-php",
-    "description": "HTML to PDF PHP wrapper with bin files",
+    "name": "alberon/HTMLtoPDF",
+    "description": "HTML to PDF PHP wrapper with executable files",
     "keywords": ["pdf", "wkhtmltopdf", "binary"],
-    "license": "LGPL Version 3",
-    "homepage": "https://github.com/alberon/wkhtmltopdf-php",
+    "license": "MIT",
+    "homepage": "https://github.com/alberon/HTMLtoPDF",
     "authors": [
+        {
+            "name": "Dave Miller",
+            "email": "dave@alberon.co.uk"
+        },
         {
             "name": "Tony Lopez",
             "email": "tony@alberon.co.uk"
         }
     ],
     "minimum-stability": "stable",
-    "bin": [
-        "bin/dev-wkhtmltopdf",
-        "bin/wkhtmltopdf"
-    ],
-    "require": {}
+    "require": {},
+	"autoload": {
+		"psr-4": {
+			"Alberon\\HTMLtoPDF\\": "src/"
+		}
+	}
 }
