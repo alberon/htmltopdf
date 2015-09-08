@@ -36,7 +36,7 @@ PHP wrapper for wkhtmltopdf [http://wkhtmltopdf.org/downloads.html](http://wkhtm
     $pdf->setVersion('amd64');
 
     // Set whether to include detailed errors or a generic error
-    //$pdf->showErrors();
+    // $pdf->showErrors();
     $pdf->hideErrors();
 
     // Output the PDF
