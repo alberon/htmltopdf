@@ -10,7 +10,7 @@
  *  <code>
  *    // Require the PDF class at the top of the file
  *    require_once "/path/to/package/src/PDF.php";
- *    use \Alberon\HTMLtoPDF\PDF;
+ *    use \Alberon\htmltopdf\PDF;
 
  *    // Open up an ob buffer to capture all the following html
  *    ob_start();
@@ -37,7 +37,7 @@
  * @version    1.0.0
  */
 
-namespace Alberon\HTMLtoPDF;
+namespace Alberon\htmltopdf;
 
 class PDF
 {

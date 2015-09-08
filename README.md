@@ -13,7 +13,7 @@ PHP wrapper for wkhtmltopdf [http://wkhtmltopdf.org/downloads.html](http://wkhtm
 2. Add to your `composer.json` file:
 
     ```bash
-    composer require alberon/HTMLtoPDF
+    composer require alberon/htmltopdf
     ```
 
 3. Usage Instructions:
@@ -21,7 +21,7 @@ PHP wrapper for wkhtmltopdf [http://wkhtmltopdf.org/downloads.html](http://wkhtm
     ```php
     // Require the PDF class at the top of the file
     require_once "/path/to/package/src/PDF.php";
-    use \Alberon\HTMLtoPDF\PDF;
+    use \Alberon\htmltopdf\PDF;
 
     // Open up an ob buffer to capture all the following html
     ob_start();
