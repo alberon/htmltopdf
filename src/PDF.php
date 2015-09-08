@@ -9,7 +9,7 @@
  * example usage for a live site:
  *  <code>
  *    // Require the PDF class at the top of the file
- *    require_once "/path/to/package/src/PDF.php";
+ *    require ABSPATH . '/../vendor/autoload.php';
  *    use \Alberon\htmltopdf\PDF;
 
  *    // Open up an ob buffer to capture all the following html
