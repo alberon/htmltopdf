@@ -1,0 +1,19 @@
+{
+    "name": "alberon/wkhtmltopdf-php",
+    "description": "HTML to PDF PHP wrapper with bin files",
+    "keywords": ["pdf", "wkhtmltopdf", "binary"],
+    "license": "LGPL Version 3",
+    "homepage": "https://github.com/alberon/wkhtmltopdf-php",
+    "authors": [
+        {
+            "name": "Tony Lopez",
+            "email": "tony@alberon.co.uk"
+        }
+    ],
+    "minimum-stability": "stable",
+    "bin": [
+        "bin/dev-wkhtmltopdf",
+        "bin/wkhtmltopdf"
+    ],
+    "require": {}
+}
