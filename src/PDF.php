@@ -41,7 +41,9 @@ namespace Alberon\htmltopdf;
 class PDF
 {
 
-    const DIR = __DIR__ . '/../bin/wkhtmltopdf-';
+    // Not sure why but didn't work on a certain server
+    // So swapped to the method below in the constructor
+    // const DIR = __DIR__ . '/../bin/wkhtmltopdf-';
 
     private $html, $errors = true, $version = 'i386';
 
@@ -53,7 +55,9 @@ class PDF
      */
     public function __construct($html)
     {
+        chdir( dirname ( __FILE__ ) );
         $this->html = $html;
+        $this->dir = getcwd() . '/../bin/wkhtmltopdf-';
     }
 
     /**
@@ -119,7 +123,7 @@ class PDF
         // Open the wkhtmltopdf file
         $process = proc_open(
             // Absolute path to wkhtmltopdf file
-            static::DIR . $this->version . ' --quiet - -',
+            $this->dir . $this->version . ' --quiet - -',
             // List of the pipes used
             $descriptorspec,
             $pipes
